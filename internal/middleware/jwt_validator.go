@@ -1,24 +1,28 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+	"fmt"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"maxprofit/internal/jwt"
 )
 
 const (
-	authorizationKey = "x-authorization"
+	authorizationHeaderKey = "x-authorization"
 )
 
-func JWTValidatorFuncHandler(secretKey string) gin.HandlerFunc {
+func JWTValidatorHandlerFunc(jwtValidator jwt.Validator) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		jwtToken := c.GetHeader(authorizationKey)
-		token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (any, error) {
-			return secretKey, nil
-		})
+		jwtToken := c.GetHeader(authorizationHeaderKey)
+		isValid, err := jwtValidator.ValidateToken(jwtToken)
 
-		if err != nil || !token.Valid {
-			c.String(http.StatusUnauthorized, "unauthorized: invalid token")
+		if err != nil {
+			_ = c.AbortWithError(http.StatusUnauthorized, fmt.Errorf("error occured while validating the token %w\n", err))
+		}
+
+		if !isValid {
+			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
 
