@@ -1,16 +1,20 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
 	calculatemaxprofitcontroller "maxprofit/internal/controller/calculatemaxprofit"
 	calculatemaxprofitinteractor "maxprofit/internal/interactor/calculatemaxprofit"
 	"maxprofit/internal/jwt"
 	"maxprofit/internal/middleware"
+	"maxprofit/internal/proto"
 )
 
 const (
@@ -19,6 +23,29 @@ const (
 	v1                = "/v1"
 )
 
+type calculateMaxProfitServer struct {
+	proto.UnimplementedProfitServer
+	calculateMaxProfitInteractor *calculatemaxprofitinteractor.Interactor
+}
+
+func newCalculateMaxProfitServer(calculateMaxProfitInteractor *calculatemaxprofitinteractor.Interactor) *calculateMaxProfitServer {
+	return &calculateMaxProfitServer{
+		calculateMaxProfitInteractor: calculateMaxProfitInteractor,
+	}
+}
+
+// TODO protect the endpoint with JWT validator check where we need to pass it
+func (c *calculateMaxProfitServer) CalculateMaxProfit(ctx context.Context, profits *proto.Profits) (*proto.MaxProfit, error) {
+	maxProfit, err := c.calculateMaxProfitInteractor.CalculateMaxProfit(ctx, profits.GetValues())
+	if err != nil {
+		return nil, err
+	}
+
+	return &proto.MaxProfit{
+		Value: maxProfit,
+	}, nil
+}
+
 func init() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
@@ -26,7 +53,7 @@ func init() {
 }
 
 func main() {
-	// TODO build rpc
+	// TODO clean-up main and move RPC routes
 	// TODO use structured logger [maybe slog]
 	// TODO unit-tests
 
@@ -48,8 +75,30 @@ func main() {
 		v1Router.POST(maxProfitEndpoint, calculateMaxProfitController.MaxProfitHandler)
 	}
 
-	// listen and serve on 0.0.0.0:8080
-	if err := r.Run(); err != nil {
-		log.Fatal(err)
+	errChan := make(chan error, 2)
+	go func() {
+		// listen and serve on 0.0.0.0:8080
+		errChan <- r.Run()
+	}()
+
+	go func() {
+		// TODO use framework instead
+		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("RPC_PORT")))
+		if err != nil {
+			errChan <- err
+			return
+		}
+
+		s := grpc.NewServer()
+		proto.RegisterProfitServer(s, newCalculateMaxProfitServer(calculateMaxProfitInteractor))
+		log.Printf("Listening and serving RPC on %s", lis.Addr())
+		errChan <- s.Serve(lis)
+	}()
+
+	for err := range errChan {
+		log.Printf("reading from errChan")
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
