@@ -34,7 +34,7 @@ func main() {
 
 	// [1:] to ignore first arg which is preserved for exec call [e.g. './main.exe']
 	args := os.Args[1:]
-	fmt.Printf("prased args: %v", args)
+	fmt.Printf("prased args: %v\n", args)
 	serverType := args[0]
 	jwtV5Validator := jwt.NewV5Validator(configs.SecretKey)
 	// TODO replace with DI [either to use Wire lib, or manual registry]
