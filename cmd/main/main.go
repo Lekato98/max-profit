@@ -20,60 +20,60 @@ import (
 const (
 	maxProfitEndpoint = "/profit/max"
 	v1                = "/v1"
+	rpc               = "rpc"
 )
 
 func main() {
 	// TODO clean-up main and move RPC routes
 	// TODO use structured logger [maybe slog]
 	// TODO unit-tests
-
-	// [1:] to ignore first arg which is preserved for exec call [e.g. './main.exe']
-	args := os.Args[1:]
-	fmt.Printf("args: %v", args)
 	configs, err := config.LoadConfigs()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// [1:] to ignore first arg which is preserved for exec call [e.g. './main.exe']
+	args := os.Args[1:]
+	fmt.Printf("prased args: %v", args)
+	serverType := args[0]
 	jwtV5Validator := jwt.NewV5Validator(configs.SecretKey)
 	// TODO replace with DI [either to use Wire lib, or manual registry]
 	calculateMaxProfitInteractor := calculatemaxprofitinteractor.NewInteractor()
-	calculateMaxProfitController := calculatemaxprofitcontroller.NewController(calculateMaxProfitInteractor)
 
-	r := gin.Default()
-	r.Use(middleware.JWTValidatorHandlerFunc(jwtV5Validator))
-	// TODO wrap the apis with docs [OpenAi-3.0 specs swagger, (either using swago or ogen)]
-	v1Router := r.Group(v1)
-	{
-		v1Router.POST(maxProfitEndpoint, calculateMaxProfitController.MaxProfitHandler)
-	}
-
-	errChan := make(chan error, 2)
-	go func() {
-		// listen and serve on 0.0.0.0:8080
-		errChan <- r.Run()
-	}()
-
-	go func() {
+	switch serverType {
+	case rpc:
 		// TODO maybe use framework
 		lis, err := net.Listen("tcp", fmt.Sprintf(":%d", configs.RpcPort))
-		defer lis.Close()
 		if err != nil {
-			errChan <- err
-			return
+			log.Fatal(err)
 		}
 
-		serverChain := grpc.ChainUnaryInterceptor(interceptor.UnaryServerJwtValidatorFunc(jwtV5Validator))
+		defer lis.Close()
+		serverChain := grpc.ChainUnaryInterceptor(
+			interceptor.UnaryServerRecovery,
+			interceptor.UnaryServerJwtValidatorFunc(jwtV5Validator),
+		)
 		s := grpc.NewServer(serverChain)
+
 		profitServer := profit.NewProfitServer(calculateMaxProfitInteractor)
 		profit.RegisterProfitServer(s, profitServer)
-		log.Printf("Listening and serving RPC on %s", lis.Addr())
-		errChan <- s.Serve(lis)
-	}()
 
-	for err := range errChan {
-		log.Printf("reading from errChan")
-		if err != nil {
+		log.Printf("Listening and serving RPC on %s", lis.Addr())
+		if err := s.Serve(lis); err != nil {
+			log.Fatal(err)
+		}
+	default:
+		calculateMaxProfitController := calculatemaxprofitcontroller.NewController(calculateMaxProfitInteractor)
+
+		r := gin.Default()
+		r.Use(middleware.JWTValidatorHandlerFunc(jwtV5Validator))
+		// TODO wrap the apis with docs [OpenAi-3.0 specs swagger, (either using swago or ogen)]
+		v1Router := r.Group(v1)
+		{
+			v1Router.POST(maxProfitEndpoint, calculateMaxProfitController.MaxProfitHandler)
+		}
+
+		if err := r.Run(); err != nil {
 			log.Fatal(err)
 		}
 	}
