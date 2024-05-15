@@ -2,15 +2,16 @@
 // versions:
 // 	protoc-gen-go v1.28.1
 // 	protoc        v3.6.1
-// source: max_profit.proto
+// source: profit.proto
 
-package proto
+package profit
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -31,7 +32,7 @@ type Profits struct {
 func (x *Profits) Reset() {
 	*x = Profits{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_max_profit_proto_msgTypes[0]
+		mi := &file_profit_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -44,7 +45,7 @@ func (x *Profits) String() string {
 func (*Profits) ProtoMessage() {}
 
 func (x *Profits) ProtoReflect() protoreflect.Message {
-	mi := &file_max_profit_proto_msgTypes[0]
+	mi := &file_profit_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +58,7 @@ func (x *Profits) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Profits.ProtoReflect.Descriptor instead.
 func (*Profits) Descriptor() ([]byte, []int) {
-	return file_max_profit_proto_rawDescGZIP(), []int{0}
+	return file_profit_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Profits) GetValues() []int64 {
@@ -78,7 +79,7 @@ type MaxProfit struct {
 func (x *MaxProfit) Reset() {
 	*x = MaxProfit{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_max_profit_proto_msgTypes[1]
+		mi := &file_profit_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -91,7 +92,7 @@ func (x *MaxProfit) String() string {
 func (*MaxProfit) ProtoMessage() {}
 
 func (x *MaxProfit) ProtoReflect() protoreflect.Message {
-	mi := &file_max_profit_proto_msgTypes[1]
+	mi := &file_profit_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +105,7 @@ func (x *MaxProfit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaxProfit.ProtoReflect.Descriptor instead.
 func (*MaxProfit) Descriptor() ([]byte, []int) {
-	return file_max_profit_proto_rawDescGZIP(), []int{1}
+	return file_profit_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *MaxProfit) GetValue() int64 {
@@ -114,40 +115,41 @@ func (x *MaxProfit) GetValue() int64 {
 	return 0
 }
 
-var File_max_profit_proto protoreflect.FileDescriptor
+var File_profit_proto protoreflect.FileDescriptor
 
-var file_max_profit_proto_rawDesc = []byte{
-	0x0a, 0x10, 0x6d, 0x61, 0x78, 0x5f, 0x70, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x22, 0x21, 0x0a, 0x07, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x73, 0x12, 0x16, 0x0a,
-	0x06, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x06, 0x76,
-	0x61, 0x6c, 0x75, 0x65, 0x73, 0x22, 0x21, 0x0a, 0x09, 0x4d, 0x61, 0x78, 0x50, 0x72, 0x6f, 0x66,
-	0x69, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x32, 0x36, 0x0a, 0x06, 0x50, 0x72, 0x6f, 0x66,
-	0x69, 0x74, 0x12, 0x2c, 0x0a, 0x12, 0x43, 0x61, 0x6c, 0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x4d,
-	0x61, 0x78, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x12, 0x08, 0x2e, 0x50, 0x72, 0x6f, 0x66, 0x69,
-	0x74, 0x73, 0x1a, 0x0a, 0x2e, 0x4d, 0x61, 0x78, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x22, 0x00,
-	0x42, 0x09, 0x5a, 0x07, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+var file_profit_proto_rawDesc = []byte{
+	0x0a, 0x0c, 0x70, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x21,
+	0x0a, 0x07, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x03, 0x52, 0x06, 0x76, 0x61, 0x6c, 0x75, 0x65,
+	0x73, 0x22, 0x21, 0x0a, 0x09, 0x4d, 0x61, 0x78, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x12, 0x14,
+	0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x76,
+	0x61, 0x6c, 0x75, 0x65, 0x32, 0x36, 0x0a, 0x06, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x12, 0x2c,
+	0x0a, 0x12, 0x43, 0x61, 0x6c, 0x63, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x78, 0x50, 0x72,
+	0x6f, 0x66, 0x69, 0x74, 0x12, 0x08, 0x2e, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x73, 0x1a, 0x0a,
+	0x2e, 0x4d, 0x61, 0x78, 0x50, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x22, 0x00, 0x42, 0x1c, 0x5a, 0x1a,
+	0x2e, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x67,
+	0x72, 0x70, 0x63, 0x2f, 0x70, 0x72, 0x6f, 0x66, 0x69, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
-	file_max_profit_proto_rawDescOnce sync.Once
-	file_max_profit_proto_rawDescData = file_max_profit_proto_rawDesc
+	file_profit_proto_rawDescOnce sync.Once
+	file_profit_proto_rawDescData = file_profit_proto_rawDesc
 )
 
-func file_max_profit_proto_rawDescGZIP() []byte {
-	file_max_profit_proto_rawDescOnce.Do(func() {
-		file_max_profit_proto_rawDescData = protoimpl.X.CompressGZIP(file_max_profit_proto_rawDescData)
+func file_profit_proto_rawDescGZIP() []byte {
+	file_profit_proto_rawDescOnce.Do(func() {
+		file_profit_proto_rawDescData = protoimpl.X.CompressGZIP(file_profit_proto_rawDescData)
 	})
-	return file_max_profit_proto_rawDescData
+	return file_profit_proto_rawDescData
 }
 
-var file_max_profit_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_max_profit_proto_goTypes = []interface{}{
+var file_profit_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_profit_proto_goTypes = []interface{}{
 	(*Profits)(nil),   // 0: Profits
 	(*MaxProfit)(nil), // 1: MaxProfit
 }
-var file_max_profit_proto_depIdxs = []int32{
+var file_profit_proto_depIdxs = []int32{
 	0, // 0: Profit.CalculateMaxProfit:input_type -> Profits
 	1, // 1: Profit.CalculateMaxProfit:output_type -> MaxProfit
 	1, // [1:2] is the sub-list for method output_type
@@ -157,13 +159,13 @@ var file_max_profit_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_max_profit_proto_init() }
-func file_max_profit_proto_init() {
-	if File_max_profit_proto != nil {
+func init() { file_profit_proto_init() }
+func file_profit_proto_init() {
+	if File_profit_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_max_profit_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_profit_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Profits); i {
 			case 0:
 				return &v.state
@@ -175,7 +177,7 @@ func file_max_profit_proto_init() {
 				return nil
 			}
 		}
-		file_max_profit_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_profit_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MaxProfit); i {
 			case 0:
 				return &v.state
@@ -192,18 +194,18 @@ func file_max_profit_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_max_profit_proto_rawDesc,
+			RawDescriptor: file_profit_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_max_profit_proto_goTypes,
-		DependencyIndexes: file_max_profit_proto_depIdxs,
-		MessageInfos:      file_max_profit_proto_msgTypes,
+		GoTypes:           file_profit_proto_goTypes,
+		DependencyIndexes: file_profit_proto_depIdxs,
+		MessageInfos:      file_profit_proto_msgTypes,
 	}.Build()
-	File_max_profit_proto = out.File
-	file_max_profit_proto_rawDesc = nil
-	file_max_profit_proto_goTypes = nil
-	file_max_profit_proto_depIdxs = nil
+	File_profit_proto = out.File
+	file_profit_proto_rawDesc = nil
+	file_profit_proto_goTypes = nil
+	file_profit_proto_depIdxs = nil
 }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./proto";
+option go_package = "./internal/api/grpc/profit";
 
 service Profit {
   rpc CalculateMaxProfit (Profits) returns (MaxProfit) {}

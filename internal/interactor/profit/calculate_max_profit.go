@@ -1,6 +1,8 @@
-package calculatemaxprofit
+package profit
 
-import "context"
+import (
+	"context"
+)
 
 func (itr *Interactor) CalculateMaxProfit(ctx context.Context, profits []int64) (int64, error) {
 	if len(profits) == 0 {

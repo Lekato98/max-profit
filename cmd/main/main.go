@@ -1,56 +1,26 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
-	calculatemaxprofitcontroller "maxprofit/internal/controller/calculatemaxprofit"
-	calculatemaxprofitinteractor "maxprofit/internal/interactor/calculatemaxprofit"
+	"maxprofit/config"
+	"maxprofit/internal/api/grpc/interceptor"
+	"maxprofit/internal/api/grpc/service/profit"
+	calculatemaxprofitcontroller "maxprofit/internal/api/http/controller/profit"
+	"maxprofit/internal/api/http/middleware"
+	calculatemaxprofitinteractor "maxprofit/internal/interactor/profit"
 	"maxprofit/internal/jwt"
-	"maxprofit/internal/middleware"
-	"maxprofit/internal/proto"
 )
 
 const (
 	maxProfitEndpoint = "/profit/max"
-	jwtSecretEnvKey   = "JWT_SECRET"
 	v1                = "/v1"
 )
-
-type calculateMaxProfitServer struct {
-	proto.UnimplementedProfitServer
-	calculateMaxProfitInteractor *calculatemaxprofitinteractor.Interactor
-}
-
-func newCalculateMaxProfitServer(calculateMaxProfitInteractor *calculatemaxprofitinteractor.Interactor) *calculateMaxProfitServer {
-	return &calculateMaxProfitServer{
-		calculateMaxProfitInteractor: calculateMaxProfitInteractor,
-	}
-}
-
-// TODO protect the endpoint with JWT validator check where we need to pass it
-func (c *calculateMaxProfitServer) CalculateMaxProfit(ctx context.Context, profits *proto.Profits) (*proto.MaxProfit, error) {
-	maxProfit, err := c.calculateMaxProfitInteractor.CalculateMaxProfit(ctx, profits.GetValues())
-	if err != nil {
-		return nil, err
-	}
-
-	return &proto.MaxProfit{
-		Value: maxProfit,
-	}, nil
-}
-
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
-	}
-}
 
 func main() {
 	// TODO clean-up main and move RPC routes
@@ -60,9 +30,12 @@ func main() {
 	// [1:] to ignore first arg which is preserved for exec call [e.g. './main.exe']
 	args := os.Args[1:]
 	fmt.Printf("args: %v", args)
+	configs, err := config.LoadConfigs()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	secretKey := os.Getenv(jwtSecretEnvKey)
-	jwtV5Validator := jwt.NewV5Validator(secretKey)
+	jwtV5Validator := jwt.NewV5Validator(configs.SecretKey)
 	// TODO replace with DI [either to use Wire lib, or manual registry]
 	calculateMaxProfitInteractor := calculatemaxprofitinteractor.NewInteractor()
 	calculateMaxProfitController := calculatemaxprofitcontroller.NewController(calculateMaxProfitInteractor)
@@ -82,15 +55,18 @@ func main() {
 	}()
 
 	go func() {
-		// TODO use framework instead
-		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", os.Getenv("RPC_PORT")))
+		// TODO maybe use framework
+		lis, err := net.Listen("tcp", fmt.Sprintf(":%d", configs.RpcPort))
+		defer lis.Close()
 		if err != nil {
 			errChan <- err
 			return
 		}
 
-		s := grpc.NewServer()
-		proto.RegisterProfitServer(s, newCalculateMaxProfitServer(calculateMaxProfitInteractor))
+		serverChain := grpc.ChainUnaryInterceptor(interceptor.UnaryServerJwtValidatorFunc(jwtV5Validator))
+		s := grpc.NewServer(serverChain)
+		profitServer := profit.NewProfitServer(calculateMaxProfitInteractor)
+		profit.RegisterProfitServer(s, profitServer)
 		log.Printf("Listening and serving RPC on %s", lis.Addr())
 		errChan <- s.Serve(lis)
 	}()

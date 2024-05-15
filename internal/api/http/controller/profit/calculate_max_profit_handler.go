@@ -1,4 +1,4 @@
-package calculatemaxprofit
+package profit
 
 import (
 	"fmt"
