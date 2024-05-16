@@ -18,6 +18,7 @@ func NewV5Validator(secretKey string) *V5 {
 
 func (v5 *V5) ValidateToken(token string) (bool, error) {
 	token = strings.TrimPrefix(token, "Bearer ")
+	// TODO think about injecting this method instead
 	decodedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
 		return []byte(v5.secretKey), nil
 	})

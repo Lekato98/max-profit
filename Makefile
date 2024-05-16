@@ -12,3 +12,8 @@ run-rpc:
 
 run-http:
 	@go run ./cmd/main/main.go http
+
+# generate jwt token with arg of hours
+# if negative, expired token will get generated
+gen-tkn:
+	@go run ./scripts/main/generate_jwt_token.go $(hours)
