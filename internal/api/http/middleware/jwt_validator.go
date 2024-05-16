@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	authorizationHeaderKey = "x-authorization"
+	authorizationHeaderKey = "authorization"
 )
 
 func JWTValidatorHandlerFunc(jwtValidator jwt.Validator) gin.HandlerFunc {
