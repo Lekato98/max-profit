@@ -3,6 +3,7 @@ package interceptor
 import (
 	"context"
 	"log"
+	"strings"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -12,7 +13,7 @@ import (
 )
 
 const (
-	authorizationMetadataKey = "x-authorization"
+	authorizationMetadataKey = "authorization"
 )
 
 var (
@@ -29,12 +30,13 @@ func UnaryServerJwtValidatorFunc(jwtValidator jwt.Validator) grpc.UnaryServerInt
 			return nil, errMissingMetadata
 		}
 
-		token := md.Get(authorizationMetadataKey)
-		if len(token) == 0 {
+		mdToken := md.Get(authorizationMetadataKey)
+		if len(mdToken) == 0 {
 			return nil, errInvalidToken
 		}
 
-		if isValid, err := jwtValidator.ValidateToken(token[0]); err != nil || !isValid {
+		token := strings.TrimPrefix(mdToken[0], "Bearer ")
+		if isValid, err := jwtValidator.ValidateToken(token); err != nil || !isValid {
 			log.Printf("error malformed or invalid token %s", err.Error())
 			return nil, errInvalidToken
 		}
