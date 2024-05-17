@@ -1,4 +1,4 @@
-package controller
+package profit
 
 type MaxProfitResponseDTO struct {
 	Result int64 `json:"result"`
